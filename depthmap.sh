@@ -31,13 +31,16 @@ cat << 'EOF' > /usr/local/bin/depthmap
 #!/bin/bash
 cd /content/Depth-Anything-V2
 
-python run_video.py \
-    --encoder vitl \
-    --video-path "$1" \
-    --outdir output \
-    --grayscale \
-    --pred-only \
-    --device cuda
+# clean mode – no noise, no artifacts
+export CUDA_VISIBLE_DEVICES=0
+export PYTORCH_ENABLE_MPS_FALLBACK=1
+export TORCH_USE_CUDA_DSA=0
+export CUDA_LAUNCH_BLOCKING=1
+export CUBLAS_WORKSPACE_CONFIG=:16:8
+export PYTORCH_DETERMINISTIC=1
+
+# run video clean depthmap
+python run_video.py --encoder vitl --video-path "$1" --outdir output --grayscale --pred-only
 EOF
 
 chmod +x /usr/local/bin/depthmap
