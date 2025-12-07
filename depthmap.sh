@@ -17,7 +17,7 @@ echo "===== creating checkpoints folder ====="
 mkdir -p checkpoints
 
 echo "===== downloading model ====="
-wget -O checkpoints/depth_anything_v2_vitb.pth "https://huggingface.co/depth-anything/Depth-Anything-V2-Base/resolve/main/depth_anything_v2_vitb.pth?download=true"
+wget -O checkpoints/depth_anything_v2_vitl.pth "https://huggingface.co/depth-anything/Depth-Anything-V2-Large/resolve/main/depth_anything_v2_vitl.pth?download=true"
 
 echo "===== installing python requirements ====="
 pip install -r requirements.txt --break-system-packages
@@ -26,7 +26,7 @@ echo "===== creating 'depthmap' command ====="
 cat << 'EOF' > /usr/local/bin/depthmap
 #!/bin/bash
 cd /content/Depth-Anything-V2
-python run_video.py --encoder vitb --video-path "$1" --outdir output --grayscale --pred-only
+python run_video.py --encoder vitl --video-path "$1" --outdir output --grayscale --pred-only
 EOF
 
 chmod +x /usr/local/bin/depthmap
