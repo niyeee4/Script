@@ -45,5 +45,5 @@ chmod +x /usr/local/bin/depthmap
 echo "===== setup complete ====="
 echo ""
 echo "now you can run:"
-echo "    depthmap yourfile.mp4"
+echo "!depthmap yourfile.mp4"
 echo ""
