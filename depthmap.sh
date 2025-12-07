@@ -5,7 +5,7 @@ echo "===== updating system packages ====="
 sudo apt update -y
 
 echo "===== installing dependencies ====="
-sudo apt install python3 python3-pip git build-essential mesa libgl1 git wget curl unzip ffmpeg -y
+sudo apt install python3 python3-pip git build-essential mesa-utils libgl1-mesa-glx libgl1-mesa-dri libgl1 git wget curl unzip ffmpeg -y
 
 echo "===== cloning depth-anything-v2 ====="
 git clone https://github.com/DepthAnything/Depth-Anything-V2.git
