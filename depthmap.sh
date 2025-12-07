@@ -26,7 +26,7 @@ echo "===== creating 'depthmap' command ====="
 cat << 'EOF' > /usr/local/bin/depthmap
 #!/bin/bash
 cd /content/Depth-Anything-V2
-python run_video.py --encoder vitl --video-path "$1" --outdir output --input-size 2048 --grayscale --pred-only
+python run_video.py --encoder vitl --video-path "$1" --outdir output --grayscale --pred-only
 EOF
 
 chmod +x /usr/local/bin/depthmap
@@ -34,7 +34,10 @@ chmod +x /usr/local/bin/depthmap
 echo "===== setup complete ====="
 echo ""
 echo "now you can run:"
-echo "!depthmap "yourfile.mp4""
+
+echo "!depthmap \"yourfile.mp4\""
+
 echo "for example:"
-echo "!depthmap "anime.mp4""
+
+echo "!depthmap \"anime.mp4\""
 echo ""
