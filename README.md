@@ -30,4 +30,4 @@ yourfile.mp4 = 30 fps → multi 2 → 60 fps
 
 yourfile.mp4 = 30 fps → multi 6 → 180 fps
 
-use only multi 2–10 higher multi values increase processing time
+use only multi 2-8 higher multi values increase processing time
