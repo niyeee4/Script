@@ -1,6 +1,6 @@
 NOTE: CHANGE RUNTIME TYPE → RUNTIME → CHANGE RUNTIME TYPE → SELECT T4 GPU → SAVE
 
-DEPTHMAPS
+DEPTHMAPS(Depth Anything V2)
 
 https://colab.google/
 
@@ -13,7 +13,7 @@ to run: !depthmap "yourfile.mp4"
 
 output path: /Depth-Anything-V2/output/yourfile.mp4
 
-RIFE
+RIFE(Practical RIFE)
 
 https://colab.google/
 
