@@ -1,6 +1,6 @@
 NOTE: CHANGE RUNTIME TYPE → RUNTIME → CHANGE RUNTIME TYPE → SELECT T4 GPU → SAVE
 
-DEPTHMAPS(Depth Anything V2)
+DEPTHMAP(Depth Anything V2)
 
 https://colab.google/
 
@@ -18,7 +18,7 @@ RIFE(Practical RIFE)
 https://colab.google/
 
 command:
-curl -sL https://raw.githubusercontent.com/niyeee4/Script/refs/heads/main/rife.sh | bash
+!curl -sL https://raw.githubusercontent.com/niyeee4/Script/refs/heads/main/rife.sh | bash
 
 upload your video to /Practical-RIFE
 
