@@ -5,9 +5,11 @@ https://colab.google/
 command:
 !curl -sL https://raw.githubusercontent.com/niyeee4/Script/main/depthmap.sh | bash
 
-!depthmap "yourfile.mp4" 
+upload your video to /Depth-Anything-V2
 
-output path:/Depth-Anything-V2/output/yourfile.mp4
+to run: !depthmap "yourfile.mp4" 
+
+output path: /Depth-Anything-V2/output/yourfile.mp4
 
 RIFE
 
@@ -16,6 +18,16 @@ https://colab.google/
 command:
 curl -sL https://raw.githubusercontent.com/niyeee4/Script/refs/heads/main/rife.sh | bash
 
-!rife "yourfile.mp4" multi 4
+upload your video to /Practical-RIFE
 
-output path:/Practical-RIFE/output_x4_yourfile.mp4
+to run: !rife "yourfile.mp4" multi 4
+
+output path: /Practical-RIFE/output_x4_yourfile.mp4
+
+what is “multi”?
+
+yourfile.mp4 = 30 fps → multi 2 → 60 fps
+
+yourfile.mp4 = 30 fps → multi 6 → 180 fps
+
+use only multi 2–10 higher multi values increase processing time
