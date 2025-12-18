@@ -5,7 +5,7 @@ DEPTHMAP(Depth Anything V2)
 https://colab.google/
 
 command:
-!curl -sL https://raw.githubusercontent.com/niyeee4/Script/main/depthmap.sh | bash`
+!curl -sL https://raw.githubusercontent.com/niyeee4/Script/main/depthmap.sh | bash
 
 upload your video to /Depth-Anything-V2
 
