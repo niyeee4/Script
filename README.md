@@ -26,10 +26,10 @@ to run: ```!rife "yourfile.mp4" multi 4```
 
 output path: /Practical-RIFE/output_x4_yourfile.mp4
 
-what is “multi”?
+**what is “multi”?**
 
-yourfile.mp4 = 30 fps → multi 2 → 60 fps
+yourfile.mp4 🟰 30 fps ➡️ multi 2 ➡️ 60 fps
 
-yourfile.mp4 = 30 fps → multi 6 → 180 fps
+yourfile.mp4 🟰 30 fps ➡️ multi 6 ➡️ 180 fps
 
 use only multi 2-8 higher multi values increase processing time
