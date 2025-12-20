@@ -1,128 +1,111 @@
 #!/data/data/com.termux/files/usr/bin/bash
 
-#########################################################################
-# Variables (trích từ script gốc)
-#########################################################################
+set -e
 
 TERMUX_HOME="$HOME"
 TERMUX_PREFIX="/data/data/com.termux/files/usr"
-REPO_OWNER="sabamdarif"
-REPO_NAME="termux-desktop"
-REPO_BRANCH_MAIN="main"
-REPO_RAW_URL="https://raw.githubusercontent.com/${REPO_OWNER}/${REPO_NAME}"
 
-#########################################################################
-# Helper functions (trích nguyên bản)
-#########################################################################
+echo "[*] Updating packages"
+pkg update -y
 
-print_msg() { echo -e "$1"; }
-print_failed() { echo -e "❌ $1"; }
-print_success() { echo -e "✅ $1"; }
+echo "[*] Installing required packages"
+pkg install -y \
+  curl \
+  tar \
+  fontconfig-utils \
+  nerdfix \
+  bat \
+  eza
 
-check_and_create_directory() {
-  [[ -d "$1" ]] || mkdir -p "$1"
-}
+####################################
+# TERMINAL COLORS (from script gốc)
+####################################
+mkdir -p "$TERMUX_HOME/.termux"
 
-check_and_delete() {
-  for i in "$@"; do
-    [[ -e "$i" ]] && rm -rf "$i"
-  done
-}
+cat > "$TERMUX_HOME/.termux/colors.properties" <<'EOF'
+background=#0f111a
+foreground=#c0caf5
+cursor=#c0caf5
 
-download_file() {
-  local dest url
-  if [[ -z "$2" ]]; then
-    url="$1"
-    dest="$(basename "$url")"
-  else
-    dest="$1"
-    url="$2"
-  fi
-  curl -L --fail "$url" -o "$dest" || wget -O "$dest" "$url"
-}
+color0=#15161e
+color1=#f7768e
+color2=#9ece6a
+color3=#e0af68
+color4=#7aa2f7
+color5=#bb9af7
+color6=#7dcfff
+color7=#a9b1d6
+color8=#414868
+color9=#f7768e
+color10=#9ece6a
+color11=#e0af68
+color12=#7aa2f7
+color13=#bb9af7
+color14=#7dcfff
+color15=#c0caf5
+EOF
 
-get_latest_release() {
-  curl -s "https://api.github.com/repos/$1/$2/releases/latest" | jq -r '.tag_name'
-}
+####################################
+# NERD FONT (logic gốc, hardcode)
+####################################
+echo "[*] Installing Nerd Font (0xProto)"
 
-#########################################################################
-# Select Shell
-#########################################################################
+mkdir -p "$TERMUX_HOME/.fonts"
+mkdir -p "$TERMUX_HOME/.termux"
 
-echo "Select your shell:"
-echo "1) Zsh"
-echo "2) Bash"
-read -r shell_choice
+FONT_VERSION="v3.2.1"
+FONT_NAME="0xProto"
 
-if [[ "$shell_choice" == "1" ]]; then
-  pkg install -y zsh
-  chsh -s zsh
-  shell_rc_file="$TERMUX_HOME/.zshrc"
-else
-  shell_rc_file="$TERMUX_HOME/.bashrc"
-fi
+curl -L \
+  "https://github.com/ryanoasis/nerd-fonts/releases/download/${FONT_VERSION}/${FONT_NAME}.tar.xz" \
+  -o "/tmp/${FONT_NAME}.tar.xz"
 
-#########################################################################
-# ZSH Theme (trích nguyên logic)
-#########################################################################
+tar -xf "/tmp/${FONT_NAME}.tar.xz" -C "$TERMUX_HOME/.fonts"
 
-if [[ "$shell_choice" == "1" ]]; then
-  echo "Select zsh theme:"
-  echo "1) td_zsh"
-  echo "2) powerlevel10k"
-  echo "3) pure"
-  read -r chosen_zsh_theme
+FONT_FILE=$(find "$TERMUX_HOME/.fonts" -iname "*NerdFont-Regular*" | head -n1)
 
-  case "$chosen_zsh_theme" in
-    1) selected_zsh_theme_name="td_zsh" ;;
-    2) selected_zsh_theme_name="p10k_zsh" ;;
-    3) selected_zsh_theme_name="pure_zsh" ;;
-  esac
-
-  echo "export ZSH_THEME=${selected_zsh_theme_name}" >> "$shell_rc_file"
-fi
-
-#########################################################################
-# Terminal Utilities
-#########################################################################
-
-pkg install -y nerdfix fontconfig-utils bat eza
-
-echo "[[ -f $TERMUX_HOME/.aliases ]] && source $TERMUX_HOME/.aliases" >> "$shell_rc_file"
-
-#########################################################################
-# Nerd Font Setup (trích 100%)
-#########################################################################
-
-latest_nf_version=$(get_latest_release "ryanoasis" "nerd-fonts")
-
-echo "Select Nerd Font:"
-release_json=$(curl -sSL "https://api.github.com/repos/ryanoasis/nerd-fonts/releases/tags/${latest_nf_version}")
-
-mapfile -t ASSET_NAMES < <(
-  jq -r '.assets[] | select(.name|endswith(".tar.xz")) | .name' <<< "$release_json"
-)
-
-for i in "${!ASSET_NAMES[@]}"; do
-  echo "$((i+1))) ${ASSET_NAMES[$i]%.tar.xz}"
-done
-
-read -r nerd_choice
-sel_base_name="${ASSET_NAMES[$((nerd_choice-1))]%.tar.xz}"
-
-check_and_create_directory "$TERMUX_HOME/.termux"
-check_and_create_directory "$TERMUX_HOME/.fonts"
-
-download_file "${sel_base_name}.tar.xz" \
-  "https://github.com/ryanoasis/nerd-fonts/releases/download/${latest_nf_version}/${sel_base_name}.tar.xz"
-
-tar -xf "${sel_base_name}.tar.xz" -C "$TERMUX_HOME/.fonts"
-
-nerd_font_file=$(find "$TERMUX_HOME/.fonts" -iname "*NerdFont-Regular*" | head -n1)
-
-cp "$nerd_font_file" "$TERMUX_HOME/.termux/font.ttf"
+cp "$FONT_FILE" "$TERMUX_HOME/.termux/font.ttf"
 fc-cache -f
 
-check_and_delete "${sel_base_name}.tar.xz"
+####################################
+# TERMINAL UTILITIES (script gốc)
+####################################
 
-print_success "Terminal-only setup completed"
+# aliases
+cat > "$TERMUX_HOME/.aliases" <<'EOF'
+alias ls='eza --icons'
+alias ll='eza -lah --icons'
+alias cat='bat'
+EOF
+
+####################################
+# BASHRC (KHÔNG ZSH)
+####################################
+BASHRC="$TERMUX_HOME/.bashrc"
+
+grep -q ".aliases" "$BASHRC" 2>/dev/null || echo '[[ -f ~/.aliases ]] && source ~/.aliases' >> "$BASHRC"
+
+####################################
+# MOTD (terminal đẹp)
+####################################
+cat > "$TERMUX_PREFIX/etc/motd.sh" <<'EOF'
+#!/data/data/com.termux/files/usr/bin/bash
+echo
+echo "✨ Termux Terminal Ready"
+echo "📦 bat | eza | Nerd Font"
+echo
+EOF
+
+chmod +x "$TERMUX_PREFIX/etc/motd.sh"
+
+if ! grep -q motd.sh "$TERMUX_PREFIX/etc/termux-login.sh" 2>/dev/null; then
+  echo ". $TERMUX_PREFIX/etc/motd.sh" >> "$TERMUX_PREFIX/etc/termux-login.sh"
+fi
+
+####################################
+# APPLY
+####################################
+termux-reload-settings
+
+echo "✅ Terminal-only setup completed"
+echo "👉 Restart Termux to apply font & colors"
