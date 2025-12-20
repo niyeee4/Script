@@ -1,66 +1,128 @@
 #!/data/data/com.termux/files/usr/bin/bash
 
-# TERMUX: update & install required
-pkg update -y
-pkg install -y git zsh curl wget bash-completion
+#########################################################################
+# Variables (trích từ script gốc)
+#########################################################################
 
-# Set zsh
-chsh -s zsh
+TERMUX_HOME="$HOME"
+TERMUX_PREFIX="/data/data/com.termux/files/usr"
+REPO_OWNER="sabamdarif"
+REPO_NAME="termux-desktop"
+REPO_BRANCH_MAIN="main"
+REPO_RAW_URL="https://raw.githubusercontent.com/${REPO_OWNER}/${REPO_NAME}"
 
-# Install starship prompt
-curl -fsSL https://starship.rs/install.sh | bash -s -- --yes
+#########################################################################
+# Helper functions (trích nguyên bản)
+#########################################################################
 
-# Create starship config
-cat <<'EOF' > ~/.config/starship.toml
-add_newline = false
-format = """
-$username\
-$hostname\
-$directory\
-$git_branch\
-$git_state\
-$git_status\
-$cmd_duration\
-$line_break\
-$jobs\
-$time\
-$status\
-"""
-[git_status]
-disabled = false
-[username]
-style = "yellow"
-[directory]
-style = "cyan"
-EOF
+print_msg() { echo -e "$1"; }
+print_failed() { echo -e "❌ $1"; }
+print_success() { echo -e "✅ $1"; }
 
-# Setup history + autosuggestions + completion
-pkg install -y fish
-git clone https://github.com/zsh-users/zsh-autosuggestions ~/.zsh/zsh-autosuggestions
-git clone https://github.com/zsh-users/zsh-syntax-highlighting ~/.zsh/zsh-syntax-highlighting
+check_and_create_directory() {
+  [[ -d "$1" ]] || mkdir -p "$1"
+}
 
-cat <<'EOF' >> ~/.zshrc
-# Starship
-eval "$(starship init zsh)"
+check_and_delete() {
+  for i in "$@"; do
+    [[ -e "$i" ]] && rm -rf "$i"
+  done
+}
 
-# History
-HISTFILE=~/.zsh_history
-SAVEHIST=10000
-setopt inc_append_history
-setopt share_history
+download_file() {
+  local dest url
+  if [[ -z "$2" ]]; then
+    url="$1"
+    dest="$(basename "$url")"
+  else
+    dest="$1"
+    url="$2"
+  fi
+  curl -L --fail "$url" -o "$dest" || wget -O "$dest" "$url"
+}
 
-# Enable suggestions & highlight
-source ~/.zsh/zsh-autosuggestions/zsh-autosuggestions.zsh
-source ~/.zsh/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+get_latest_release() {
+  curl -s "https://api.github.com/repos/$1/$2/releases/latest" | jq -r '.tag_name'
+}
 
-# Completion
-autoload -U compinit && compinit
-EOF
+#########################################################################
+# Select Shell
+#########################################################################
 
-# Install nerd font
-mkdir -p ~/.local/share/fonts
-wget https://github.com/ryanoasis/nerd-fonts/releases/download/v3.0.2/JetBrainsMono.zip -O /sdcard/JetBrainsMono.zip
-unzip -o /sdcard/JetBrainsMono.zip -d ~/.local/share/fonts
-fc-cache -fv
+echo "Select your shell:"
+echo "1) Zsh"
+echo "2) Bash"
+read -r shell_choice
 
-echo "Terminal setup done! Restart Termux."
+if [[ "$shell_choice" == "1" ]]; then
+  pkg install -y zsh
+  chsh -s zsh
+  shell_rc_file="$TERMUX_HOME/.zshrc"
+else
+  shell_rc_file="$TERMUX_HOME/.bashrc"
+fi
+
+#########################################################################
+# ZSH Theme (trích nguyên logic)
+#########################################################################
+
+if [[ "$shell_choice" == "1" ]]; then
+  echo "Select zsh theme:"
+  echo "1) td_zsh"
+  echo "2) powerlevel10k"
+  echo "3) pure"
+  read -r chosen_zsh_theme
+
+  case "$chosen_zsh_theme" in
+    1) selected_zsh_theme_name="td_zsh" ;;
+    2) selected_zsh_theme_name="p10k_zsh" ;;
+    3) selected_zsh_theme_name="pure_zsh" ;;
+  esac
+
+  echo "export ZSH_THEME=${selected_zsh_theme_name}" >> "$shell_rc_file"
+fi
+
+#########################################################################
+# Terminal Utilities
+#########################################################################
+
+pkg install -y nerdfix fontconfig-utils bat eza
+
+echo "[[ -f $TERMUX_HOME/.aliases ]] && source $TERMUX_HOME/.aliases" >> "$shell_rc_file"
+
+#########################################################################
+# Nerd Font Setup (trích 100%)
+#########################################################################
+
+latest_nf_version=$(get_latest_release "ryanoasis" "nerd-fonts")
+
+echo "Select Nerd Font:"
+release_json=$(curl -sSL "https://api.github.com/repos/ryanoasis/nerd-fonts/releases/tags/${latest_nf_version}")
+
+mapfile -t ASSET_NAMES < <(
+  jq -r '.assets[] | select(.name|endswith(".tar.xz")) | .name' <<< "$release_json"
+)
+
+for i in "${!ASSET_NAMES[@]}"; do
+  echo "$((i+1))) ${ASSET_NAMES[$i]%.tar.xz}"
+done
+
+read -r nerd_choice
+sel_base_name="${ASSET_NAMES[$((nerd_choice-1))]%.tar.xz}"
+
+check_and_create_directory "$TERMUX_HOME/.termux"
+check_and_create_directory "$TERMUX_HOME/.fonts"
+
+download_file "${sel_base_name}.tar.xz" \
+  "https://github.com/ryanoasis/nerd-fonts/releases/download/${latest_nf_version}/${sel_base_name}.tar.xz"
+
+tar -xf "${sel_base_name}.tar.xz" -C "$TERMUX_HOME/.fonts"
+
+nerd_font_file=$(find "$TERMUX_HOME/.fonts" -iname "*NerdFont-Regular*" | head -n1)
+
+cp "$nerd_font_file" "$TERMUX_HOME/.termux/font.ttf"
+fc-cache -f
+
+check_and_delete "${sel_base_name}.tar.xz"
+
+print_success "Terminal-only setup completed"
