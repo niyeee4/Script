@@ -26,7 +26,7 @@ to run: ```!rife "yourfile.mp4" multi 4```
 
 output path: /Practical-RIFE/output_x4_yourfile.mp4
 
-**what is “multi”?**
+**WHAT IS “MULTI”?**
 
 yourfile.mp4 🟰 30 fps ➡️ multi 2 ➡️ 60 fps
 
