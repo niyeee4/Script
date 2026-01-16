@@ -13,7 +13,7 @@ to run: ```!depthmap "yourfile.mp4"```
 
 output path: /Depth-Anything-V2/output/yourfile.mp4
 
-RIFE(Practical RIFE)
+RIFE(Practical RIFE) ERROR
 
 https://colab.google/
 
