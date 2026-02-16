@@ -5,11 +5,14 @@ DEPTHMAP(Depth Anything V2)
 https://colab.google/
 
 command:
-```!curl -sL https://raw.githubusercontent.com/niyeee4/Script/main/depthmap.sh | bash```
+```bash
+!curl -sL https://raw.githubusercontent.com/niyeee4/Script/main/depthmap.sh | bash
+```
 
 upload your video to /Depth-Anything-V2
 
-to run: ```!depthmap "yourfile.mp4"```
+to run: 
+```!depthmap "yourfile.mp4"```
 
 output path: /Depth-Anything-V2/output/yourfile.mp4
 
@@ -18,7 +21,9 @@ RIFE(Practical RIFE)
 https://colab.google/
 
 command:
-```!curl -sL https://raw.githubusercontent.com/niyeee4/Script/refs/heads/main/rife.sh | bash```
+```bash
+!curl -sL https://raw.githubusercontent.com/niyeee4/Script/refs/heads/main/rife.sh | bash
+```
 
 upload your video to /Practical-RIFE
 
