@@ -9,3 +9,7 @@ pip install facexlib
 pip install gfpgan
 pip install -r requirements.txt
 python setup.py develop
+pip uninstall basicsr torch torchvision -y
+pip install torch torchvision
+pip install basicsr==1.4.2
+pip install facexlib gfpgan
